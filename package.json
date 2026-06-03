@@ -1,0 +1,35 @@
+{
+  "name": "opencode-evolve",
+  "version": "0.1.0",
+  "description": "Safe local skill management plugin for OpenCode",
+  "type": "module",
+  "main": "./dist/plugin.js",
+  "types": "./dist/plugin.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/plugin.d.ts",
+      "default": "./dist/plugin.js"
+    }
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "cd playground && EVOLVE_DEBUG=1 opencode --print-logs --log-level DEBUG",
+    "dev:run": "cd playground && EVOLVE_DEBUG=1 opencode run",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "pack:check": "npm pack --dry-run"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "1.15.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
+  }
+}

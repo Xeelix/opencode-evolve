@@ -2,9 +2,27 @@
   "name": "opencode-evolve",
   "version": "0.1.0",
   "description": "Safe local skill management plugin for OpenCode",
+  "author": "Xeelix",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/plugin.js",
   "types": "./dist/plugin.d.ts",
+  "homepage": "https://github.com/Xeelix/opencode-evolve#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xeelix/opencode-evolve.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Xeelix/opencode-evolve/issues"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "skills",
+    "agent-skills",
+    "ai-agent",
+    "developer-tools"
+  ],
   "exports": {
     ".": {
       "types": "./dist/plugin.d.ts",

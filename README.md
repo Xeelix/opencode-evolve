@@ -1,175 +1,69 @@
 # opencode-evolve
 
-Manual skill evolution for OpenCode.
+> Turn your agent's mistakes into reusable project skills — manually, safely, and Git-tracked.
 
-`opencode-evolve` gives OpenCode a controlled way to turn your corrections, project workflows, and hard-won debugging lessons into reusable local skills.
+[![npm version](https://img.shields.io/npm/v/opencode-evolve.svg)](https://www.npmjs.com/package/opencode-evolve)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![OpenCode](https://img.shields.io/badge/works%20with-OpenCode-9cf.svg)](https://opencode.ai)
 
-It is inspired by Hermes Agent's skill evolution loop, but intentionally **manual**.
+`opencode-evolve` is on npm: **[npmjs.com/package/opencode-evolve](https://www.npmjs.com/package/opencode-evolve)**
 
-Hermes-style self-improvement is powerful, but automatic skill writing can happen at the wrong time, miss the point, or preserve a lesson incorrectly. `opencode-evolve` takes the useful part — creating and refining skills from real work — and puts you back in control.
+Your AI coding agent is great at solving *this* task. It's terrible at remembering the lesson next week.
 
-You decide when the agent should evolve.
-
-```txt
-/evolve remember: this repo uses bun test, not npm test
-```
-
-The plugin gives the agent safe tools to list, read, patch, create, and lock skills in your project.
-
----
-
-## The problem
-
-AI coding agents are good at solving the current task.
-
-They are much worse at carrying project-specific lessons into the next session.
-
-You correct the agent once:
+You correct it:
 
 ```txt
 Don't edit generated files.
-Use bun test here.
-Check staged and unstaged diffs separately.
+Use bun test here, not npm test.
 Run Firebase emulators before testing functions.
-This repo uses feature flags through config.ts, not env vars.
 ```
 
-Then a week later, the agent forgets.
+A week later, it forgets. You explain it again. Repeat forever.
 
-So you explain it again.
-
-That is the pain `opencode-evolve` solves.
-
-Not by adding a giant memory database.
-Not by running an autonomous background curator.
-Not by turning every chat message into knowledge.
-
-It gives you a small, explicit loop:
-
-```txt
-correction -> /evolve -> SKILL.md -> better future sessions
-```
-
----
-
-## Why manual?
-
-Because not every lesson should become a skill.
-
-Automatic self-improvement sounds nice until the agent confidently writes the wrong thing into long-term instructions.
-
-`opencode-evolve` is manual on purpose:
-
-* You call `/evolve` when a lesson is actually worth keeping.
-* You can point the agent at the exact workflow to capture.
-* The agent gets dedicated tools for safe skill edits.
-* The result is plain files you can review with Git.
-* If the change is bad, you revert it like any other code change.
-
-This keeps the loop useful without making it spooky.
-
----
-
-## What it does
-
-`opencode-evolve` manages project-local skills in:
-
-```txt
-.opencode/skills/
-```
-
-It can:
-
-* list existing skills
-* read `SKILL.md` and supporting files
-* create new skills
-* patch skills with exact text replacement
-* add supporting files under safe directories
-* remove supporting files safely
-* lock skills that should not be edited
-* reject unsafe paths, oversized files, and likely secrets
-
-It is designed for reusable project workflows, not random notes.
-
-Good candidates:
-
-```txt
-Use this test command in this repo.
-Never edit these generated files.
-Follow this release checklist.
-Debug this service in this order.
-Use this git review workflow.
-Use this project-specific architecture pattern.
-```
-
-Bad candidates:
-
-```txt
-I fixed one typo.
-The package manager was temporarily broken.
-The API was down today.
-The agent made a random one-off mistake.
-```
-
----
-
-## What this is not
-
-`opencode-evolve` is not a skill marketplace.
-
-It is not a replacement for OpenCode's built-in skills.
-
-It is not a background memory system.
-
-It is not an autonomous self-improving agent.
-
-It is a small plugin that gives your agent a safe way to maintain project skills when you explicitly ask it to.
-
----
-
-## Quick example
-
-The agent keeps running the wrong command:
-
-```txt
-npm test
-```
-
-But your repo uses:
-
-```txt
-bun test
-```
-
-You run:
+**`opencode-evolve` fixes that.** One command captures the lesson into a real file in your repo, so every future session inherits it:
 
 ```txt
 /evolve remember: this project uses bun test, not npm test
 ```
 
-The agent can create or patch a skill like:
-
-```txt
-.opencode/skills/project-test-workflow/SKILL.md
-```
-
-Next time, the workflow is available as project knowledge instead of buried in an old chat.
-
-Review the change:
-
-```bash
-git diff .opencode/skills
-```
-
-Commit it if it is useful.
+No database. No background daemon. No magic. Just plain `SKILL.md` files you review with `git diff`.
 
 ---
 
-## Installation
+## Why manual?
 
-Add the plugin to your OpenCode config.
+Automatic skill-writing sounds cool until the agent confidently writes the *wrong* thing into long-term instructions — at 2am, mid-task, missing the point.
 
-Project config:
+`opencode-evolve` keeps the useful part of self-improvement and puts *you* back in control:
+
+- You decide when a lesson is worth keeping.
+- The agent gets scoped tools — no shell tricks, no broad filesystem access.
+- Every change is a normal file you can review, commit, or revert like any other code.
+
+That's the whole point: **useful without being spooky.**
+
+---
+
+## Features
+
+- **4 safe tools** for the agent to list, read, patch, and lock skills
+- **Exact-match patches** — no risky full-file rewrites, no accidental overwrites
+- **Skill locking** — freeze skills you own so they can't be touched
+- **Hardened safety** — blocks path traversal, symlink escapes, oversized files, and likely secrets
+- **100% Git-tracked** — your agent's project knowledge travels with the codebase
+- **Local-only** — no telemetry, no network, no hidden state
+
+---
+
+## Install
+
+Install the package, then add the plugin to your OpenCode config.
+
+```bash
+npm install opencode-evolve
+```
+
+**Project config** (`.opencode/opencode.json`):
 
 ```json
 {
@@ -178,88 +72,84 @@ Project config:
 }
 ```
 
-Then add the command template:
+**Command template** — copy the template into your commands folder:
 
 ```txt
-templates/evolve.md -> .opencode/commands/evolve.md
+templates/evolve.md  ->  .opencode/commands/evolve.md
 ```
 
-Restart OpenCode.
+Restart OpenCode. That's it. Now you have `/evolve`.
 
-Now use:
-
-```txt
-/evolve
-```
-
-or:
-
-```txt
-/evolve remember: always check staged and unstaged diffs separately before editing git changes
-```
+> Want your team to benefit too? Commit `.opencode/commands/evolve.md` and `.opencode/skills/` to the repo. The agent's smarts ship with the code.
 
 ---
 
-## Recommended setup
+## Quick start
 
-Commit these files to your repo:
+The agent keeps running `npm test`, but your repo uses `bun test`.
 
 ```txt
-.opencode/commands/evolve.md
-.opencode/skills/
+/evolve remember: this project uses bun test, not npm test
 ```
 
-This makes your agent's project knowledge travel with the codebase.
+The agent creates or updates a skill:
 
-Do not commit local debug files or temporary experiments.
+```txt
+.opencode/skills/project-test-workflow/SKILL.md
+```
+
+Next session, that workflow is already known — not buried in an old chat. Review it like any change:
+
+```bash
+git diff .opencode/skills
+```
+
+Like it? Commit it.
 
 ---
 
 ## How it works
 
-The `/evolve` command tells the agent when to update skills.
+The loop is intentionally tiny:
 
-The plugin gives the agent four tools:
+```txt
+correction  ->  /evolve  ->  SKILL.md  ->  better future sessions
+```
+
+### The command
+
+`/evolve` tells the agent *when* to update skills. You can point it at a specific lesson:
+
+```txt
+/evolve remember: never mix already staged changes with new unstaged edits
+/evolve create a skill for our Firebase emulator workflow
+/evolve improve git-review-flow with the staged/unstaged rule we just used
+/evolve lock git-review-flow
+/evolve status
+```
+
+### The tools
+
+The plugin gives the agent four scoped tools — nothing more:
 
 | Tool            | Purpose                                   |
 | --------------- | ----------------------------------------- |
 | `evolve_list`   | List project skills and their status      |
 | `evolve_read`   | Read a skill or supporting file           |
 | `evolve_edit`   | Create, patch, or edit skill files safely |
-| `evolve_curate` | Lock, unlock, or inspect skill governance |
+| `evolve_policy` | Lock, unlock, or inspect skill policy     |
 
-The agent does not need shell tricks or broad filesystem access to maintain skills. It uses these scoped tools.
+### Skill storage
 
----
-
-## Skill storage
-
-Skills live in:
+Skills live as plain files under:
 
 ```txt
 .opencode/skills/
 ```
 
-Examples:
-
 ```txt
 .opencode/skills/git-review-flow/SKILL.md
 .opencode/skills/testing/bun-workflow/SKILL.md
-.opencode/skills/firebase/emulator-debugging/SKILL.md
-```
-
-A skill may also include supporting files:
-
-```txt
-references/
-templates/
-scripts/
-assets/
-```
-
-Example:
-
-```txt
 .opencode/skills/release-checklist/
   SKILL.md
   references/
@@ -268,149 +158,86 @@ Example:
     verify-release.sh
 ```
 
+A skill can carry supporting files under `references/`, `templates/`, `scripts/`, or `assets/`.
+
 ---
 
-## Editing model
+## What makes a good skill?
 
-`opencode-evolve` supports two main ways to change a skill.
+**Keep procedures, not chatter.**
 
-### Patch
+✅ Good — reusable project knowledge:
 
-Use `patch` for small, surgical edits.
+```txt
+Use bun test in this repo.
+Never edit these generated files.
+Follow this release checklist.
+Debug this service in this order.
+```
 
-It replaces one exact piece of text with another.
+❌ Bad — one-off noise:
 
-This is the preferred path for most changes because it reduces accidental rewrites.
-
-### Update
-
-Use `update` only when the skill needs a full rewrite.
-
-It replaces the whole `SKILL.md`.
-
-That is useful for major cleanup, but it should not be the default.
+```txt
+I fixed one typo.
+The package manager was temporarily broken.
+The API was down today.
+```
 
 ---
 
 ## Safety model
 
-The plugin is intentionally conservative.
+The plugin is deliberately conservative. It protects against:
 
-It protects against:
+- Path traversal (`../` escapes)
+- Symlink escapes
+- Editing locked skills
+- Deleting protected files (`SKILL.md`, `.evolve.json`)
+- Writing outside allowed support directories
+- Oversized support files
+- Likely secrets in skill content
 
-* path traversal
-* symlink escapes
-* editing locked skills
-* deleting protected files
-* writing outside allowed support directories
-* oversized support files
-* likely secrets in skill content
-
-Skills can be locked with `.evolve.json`.
-
-Locked skills remain readable, but cannot be modified until unlocked.
+Skills are locked via `.evolve.json`. A locked skill stays readable but can't be modified until you unlock it.
 
 ---
 
-## Example `/evolve` prompts
+## Develop
 
-```txt
-/evolve remember: never mix already staged user-approved changes with new unstaged edits
-```
-
-```txt
-/evolve create a skill for our Firebase emulator workflow
-```
-
-```txt
-/evolve improve the git-review-flow skill with the staged/unstaged rule we just used
-```
-
-```txt
-/evolve lock git-review-flow
-```
-
-```txt
-/evolve status
-```
-
----
-
-## Philosophy
-
-The best agent memory is not a giant transcript.
-
-It is a small set of reusable procedures that are close to the project and easy to review.
-
-`opencode-evolve` keeps the loop simple:
-
-```txt
-You notice the lesson.
-You call /evolve.
-The agent updates a skill.
-Git shows the diff.
-Future sessions benefit.
-```
-
-No hidden database.
-No automatic background rewriting.
-No telemetry.
-No magic.
-
-Just project-local skills.
-
----
-
-## Development
-
-This repo includes a playground for fast local plugin development.
-
-The playground plugin imports the source directly:
+This repo ships a playground for fast local plugin work. The playground plugin imports the source directly:
 
 ```ts
 export { EvolvePlugin, default } from "../../../src/plugin"
 ```
 
-Run:
-
 ```bash
 npm install
-npm run dev
+npm run dev        # launches the OpenCode playground
 ```
 
-After changing plugin code, restart OpenCode.
-
-Run tests:
+After editing plugin code, restart OpenCode.
 
 ```bash
-npm test
-npm run typecheck
-npm run build
-```
-
-Check the npm package contents:
-
-```bash
-npm run pack:check
+npm test           # bun test
+npm run typecheck  # tsc --noEmit
+npm run build      # build dist/
+npm run pack:check # inspect npm package contents
 ```
 
 ---
 
 ## Status
 
-Early project.
+Early project, by design. The goal is to stay *small*:
 
-The goal is to stay small:
+- one command
+- four tools
+- project-local skills
+- Git-reviewable changes
 
-* one command
-* four tools
-* project-local skills
-* Git-reviewable changes
-
-If a feature makes the workflow feel like a dashboard, database, or framework, it probably does not belong here.
+If a feature turns this into a dashboard, a database, or a framework — it doesn't belong here.
 
 ---
 
 ## License
 
-MIT
+[MIT](LICENSE)
